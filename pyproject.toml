@@ -1,7 +1,11 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "create-google-cals"
 version = "0.1.0"
-description = "Add your description here"
+description = "Google Calendar CSV event manager"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -9,3 +13,12 @@ dependencies = [
     "google-auth-httplib2>=0.2.0",
     "google-auth-oauthlib>=1.2.2",
 ]
+
+[project.scripts]
+gcal = "create_google_cal.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/create_google_cal"]
+
+[tool.hatch.build]
+sources = ["src"]
