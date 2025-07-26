@@ -4,6 +4,7 @@ import argparse
 import os.path
 from create_google_cal.calendar_manager import CalendarManager
 from create_google_cal.utils import parse_date
+from create_google_cal.auth import setup_credentials_help, validate_credentials_file
 
 def main():
     parser = argparse.ArgumentParser(description='Manage Google Calendar events from CSV')
@@ -12,8 +13,23 @@ def main():
     parser.add_argument('-e', '--end', help='End date for deletion (e.g., 1-8-2025)')
     parser.add_argument('--delete', action='store_true', help='Delete events in date range')
     parser.add_argument('--force', action='store_true', help='Skip confirmation prompt')
+    parser.add_argument('--setup', action='store_true', help='Show Google API setup instructions')
     
     args = parser.parse_args()
+    
+    # Handle setup command first
+    if args.setup:
+        setup_credentials_help()
+        credentials_path = os.path.join('..', 'config', 'credentials.json')
+        is_valid, message = validate_credentials_file(credentials_path)
+        if is_valid:
+            print(f"✅ {message}")
+            print("🎉 You're ready to use the application!")
+        else:
+            print(f"❌ {message}")
+        return
+    
+    # Initialize calendar manager for other operations
     calendar_manager = CalendarManager()
     
     if args.delete:
@@ -51,6 +67,7 @@ def main():
     
     else:
         print("Usage examples:")
+        print("  Show setup instructions: python gcal.py --setup")
         print("  Create events from CSV: python gcal.py -f july28.csv")
         print("  Delete events in range: python gcal.py --delete -s 28-7-2025 -e 1-8-2025")
         print("  Delete events without confirmation: python gcal.py --delete -s 28-7-2025 -e 1-8-2025 --force")
